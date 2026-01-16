@@ -2,16 +2,17 @@ package com.example.demo.fantasy.entity;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter // From Lombok
+@Getter @Setter
+@NoArgsConstructor  // Required by JPA
+@AllArgsConstructor // Allows you to fill all fields at once
+@Builder// From Lombok
 public class User {
 
     @Id
@@ -32,5 +33,6 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Team team;
 
+    @Builder.Default // This ensures new users get a timestamp automatically
     private LocalDateTime createdAt = LocalDateTime.now();
 }
