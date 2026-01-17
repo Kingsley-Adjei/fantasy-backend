@@ -17,7 +17,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder; // Injected from our Config
 
-    // private final OtpService otpService; // We will build this next!
+    private final EmailService emailService;
+    private final OtpService otpService;
 
     public String initiateHybridAuth(String rawEmail, String password) {
         String email = EmailValidator.sanitize(rawEmail);
@@ -28,25 +29,38 @@ public class AuthService {
         Optional<User> existingUser = userRepository.findByEmail(email);
 
         if (existingUser.isPresent()) {
-            // LOGIN CASE: Check if the password matches the hash in DB
+            User user = existingUser.get();
+
             boolean matches = passwordEncoder.matches(password, existingUser.get().getPassword());
             if (!matches) {
                 throw new RuntimeException("Invalid credentials");
             }
-            return "EXISTING_USER_PROCEED_TO_OTP";
-        } else {
-            // LOGIC FOR NEW USER (SIGNUP)
-            String hashedPassword = passwordEncoder.encode(password);
+            if (!user.is_verified()) {
+                // They exist but aren't verified! Send them an OTP now.
+                String otp = otpService.generateOtp(email);
+                emailService.sendOtpEmail(email, otp);
+                return "NEW_USER_OTP_SENT";
+            }
+            return "LOGIN_SUCCESS";
 
+        } else {
+            String hashedPassword = passwordEncoder.encode(password);
             User newUser = User.builder()
                     .email(email)
                     .password(hashedPassword)
-                    .is_verified(false)
-                    .createdAt(LocalDateTime.now())
+                    .is_verified(false) // User is not verified yet
                     .build();
 
             userRepository.save(newUser);
-            // 3. Trigger OTP for Registration
+
+            // SEND OTP ONLY FOR NEW USERS
+            String otp = otpService.generateOtp(email);
+            try {
+                emailService.sendOtpEmail(email, otp);
+            } catch (Exception e) {
+                throw new RuntimeException("User created but failed to send verification email.");
+            }
+
             return "NEW_USER_OTP_SENT";
         }
     }
