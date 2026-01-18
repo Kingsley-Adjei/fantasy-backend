@@ -21,8 +21,24 @@ public class AuthController {
         String password = request.get("password");
 
         try {
-            String result = authService.initiateHybridAuth(email, password);
-            return ResponseEntity.ok(Map.of("message", result));
+            // 'result' is already a Map like {"message": "NEW_USER_OTP_SENT"}
+            Map<String, String> result = authService.initiateHybridAuth(email, password);
+
+            // Return result directly!
+            return ResponseEntity.ok(result);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    @PostMapping("/verify")
+    public ResponseEntity<?> verify(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String otp = request.get("otp");
+
+        try {
+            // This should return the Map with "message" and "token"
+            Map<String, String> result = authService.verifyOtp(email, otp);
+            return ResponseEntity.ok(result);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
