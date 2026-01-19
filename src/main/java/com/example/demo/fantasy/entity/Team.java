@@ -1,8 +1,7 @@
 package com.example.demo.fantasy.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -10,6 +9,9 @@ import java.util.UUID;
 @Table(name = "teams")
 @Getter
 @Setter
+@NoArgsConstructor // Required for JPA
+@AllArgsConstructor // Required for Builder
+@Builder
 public class Team {
 
     @Id
@@ -21,7 +23,16 @@ public class Team {
 
     private Integer totalPoints = 0;
 
-    // This is the Many-to-One magic
+    private Double remainingBudget = 100.0;
+
+    @ManyToMany
+    @JoinTable(
+            name = "team_players",
+            joinColumns = @JoinColumn(name = "team_id"),
+            inverseJoinColumns = @JoinColumn(name = "player_id")
+    )
+    private java.util.List<Player> players; // Your squad of 15
+
     @ManyToOne
     @JoinColumn(name = "badge_id")
     private ClassBadge badge;

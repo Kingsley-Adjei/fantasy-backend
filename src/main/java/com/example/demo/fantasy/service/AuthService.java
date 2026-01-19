@@ -47,10 +47,8 @@ public class AuthService {
             // --- SUCCESS CASE ---
             // We generate the token here because the user is verified!
             String token = jwtService.generateToken(email);
-            return Map.of(
-                    "message", "LOGIN_SUCCESS",
-                    "token", token
-            );
+            return createAuthResponse(user, "LOGIN_SUCCESS", token);
+
 
         } else {
             String hashedPassword = passwordEncoder.encode(password);
@@ -91,13 +89,21 @@ public class AuthService {
             // 4. Since they are now verified, give them their "ID Card" (JWT)
             String token = jwtService.generateToken(sanitizedEmail);
 
-            return Map.of(
-                    "message", "VERIFICATION_SUCCESSFUL",
-                    "token", token
-            );
+            return createAuthResponse(user, "VERIFICATION_SUCCESSFUL", token);
         } else {
             // This happens if the code is wrong OR if it expired in Redis
             throw new RuntimeException("Invalid or expired verification code.");
         }
+    }
+
+    private Map<String, String> createAuthResponse(User user, String message, String token) {
+        // Check if the user already has a team linked to their ID
+        boolean hasTeam = user.getTeam() != null;
+
+        return Map.of(
+                "message", message,
+                "token", token,
+                "hasTeam", String.valueOf(hasTeam) // We send as string for the Map
+        );
     }
 }

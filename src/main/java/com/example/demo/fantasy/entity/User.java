@@ -30,7 +30,7 @@ public class User {
 
     // This links the User to the Team table
     // mappedBy refers to the 'user' field in the Team entity
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Team team;
 
     @Builder.Default // This ensures new users get a timestamp automatically
