@@ -12,7 +12,8 @@ public class ClassBadge {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String badgeName; // e.g., "CS1"
     private String badgeIconUrl; // Link to the badge image
+    private String description; // e.g., "Class 1 Badge"
+
 }
