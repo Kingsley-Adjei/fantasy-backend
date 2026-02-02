@@ -31,4 +31,11 @@ public class TeamController {
                 "teamId", newTeam.getId()
         ));
     }
+    @GetMapping("/my-team")
+    public ResponseEntity<?> getMyTeam(@AuthenticationPrincipal User user) {
+        // We use the 'user' object injected by Spring Security via the token
+        return teamService.getTeamByUser(user)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

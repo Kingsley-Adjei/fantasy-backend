@@ -22,3 +22,4 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     // Search for a player by name (for a search bar)
     List<Player> findByNameContainingIgnoreCase(String name);
 }
+
