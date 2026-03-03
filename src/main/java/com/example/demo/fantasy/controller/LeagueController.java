@@ -29,6 +29,7 @@ public class LeagueController {
         return ResponseEntity.ok(newLeague);
     }
 
+
     @PostMapping("/join")
     public ResponseEntity<?> join(@RequestBody Map<String, String> request, @AuthenticationPrincipal User user) {
         leagueService.joinLeague(user, request.get("code"));

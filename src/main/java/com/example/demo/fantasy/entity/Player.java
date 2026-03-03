@@ -20,4 +20,6 @@ public class Player {
     private String realClub; // e.g., "Man City"
     private Double price;    // e.g., 12.5 (Cedis)
     private Integer totalPoints = 0;
+    @Column(nullable = false)
+    private Integer pointsThisGw = 0;
 }

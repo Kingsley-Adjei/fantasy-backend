@@ -3,6 +3,7 @@ package com.example.demo.fantasy.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -40,4 +41,15 @@ public class Team {
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SquadPlayer> squadPlayers;
+
+    // Helper method to get only starters for point calculation
+    public List<Player> getStartingEleven() {
+        return squadPlayers.stream()
+                .filter(SquadPlayer::isOnPitch)
+                .map(SquadPlayer::getPlayer)
+                .toList();
+    }
 }

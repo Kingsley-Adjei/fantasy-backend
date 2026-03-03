@@ -1,14 +1,17 @@
 package com.example.demo.fantasy.service;
 
 import com.example.demo.fantasy.entity.Player;
+import com.example.demo.fantasy.entity.SquadPlayer;
 import com.example.demo.fantasy.entity.Team;
 import com.example.demo.fantasy.repository.PlayerRepository;
+import com.example.demo.fantasy.repository.SquadPlayerRepository;
 import com.example.demo.fantasy.repository.TeamRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -16,22 +19,26 @@ public class PointsService {
 
     private final PlayerRepository playerRepository;
     private final TeamRepository teamRepository;
+    private final SquadPlayerRepository squadPlayerRepository;
 
     @Transactional
     public void updatePlayerPoints(Long playerId, Integer newPoints) {
-        Player player = playerRepository.findById(playerId)
-                .orElseThrow(() -> new RuntimeException("PLAYER_NOT_FOUND"));
-
-        // 1. Add to player's season total
+        // 1. Update the player's total points in the master list
+        Player player = playerRepository.findById(playerId).orElseThrow();
         player.setTotalPoints(player.getTotalPoints() + newPoints);
-        playerRepository.save(player);
 
-        // 2. Find all teams that own this player
-        List<Team> teamsWithPlayer = teamRepository.findAllByPlayersId(playerId);
+        // 2. Find all 'SquadPlayer' entries for this player where they are STARTING
+        List<SquadPlayer> starters = squadPlayerRepository.findByPlayerIdAndIsOnPitchTrue(playerId);
 
-        // 3. Update each team's total
-        for (Team team : teamsWithPlayer) {
-            // Note: In a real app, you only add points if the player was in the STARTING 11
+        // Update the player's performance for THIS week
+        player.setPointsThisGw(player.getPointsThisGw() + newPoints);
+
+        // Also add to their career total
+        player.setTotalPoints(player.getTotalPoints() + newPoints);
+
+        // 3. Only add points to teams where they were in the Starting XI
+        for (SquadPlayer starter : starters) {
+            Team team = starter.getTeam();
             team.setTotalPoints(team.getTotalPoints() + newPoints);
             teamRepository.save(team);
         }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface PlayerRepository extends JpaRepository<Player, UUID> {
+public interface PlayerRepository extends JpaRepository<Player, Long> {
 
     // Find players by position (GK, DEF, MID, FWD) for your frontend filters
     List<Player> findByPosition(String position);

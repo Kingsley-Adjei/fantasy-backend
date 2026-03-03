@@ -9,5 +9,5 @@ import java.util.UUID;
 @Setter
 public class TeamRequest {
     private String teamName;
-    private List<UUID> playerIds; // The 15 players they selected
+    private List<Long> playerIds; // The 15 players they selected
 }

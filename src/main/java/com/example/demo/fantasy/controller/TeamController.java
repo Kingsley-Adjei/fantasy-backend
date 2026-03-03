@@ -1,6 +1,8 @@
 package com.example.demo.fantasy.controller;
 
+import com.example.demo.fantasy.dto.LineupRequest;
 import com.example.demo.fantasy.dto.TeamRequest;
+import com.example.demo.fantasy.dto.TransferRequest;
 import com.example.demo.fantasy.entity.Team;
 import com.example.demo.fantasy.entity.User;
 import com.example.demo.fantasy.service.TeamService;
@@ -37,5 +39,28 @@ public class TeamController {
         return teamService.getTeamByUser(user)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @PostMapping("/transfer")
+    public ResponseEntity<?> transferPlayer(
+            @RequestBody TransferRequest request,
+            @AuthenticationPrincipal User user) {
+
+        teamService.performTransfer(user, request);
+
+        return ResponseEntity.ok(java.util.Map.of(
+                "message", "TRANSFER_SUCCESSFUL",
+                "status", "SUCCESS"
+        ));
+    }
+    @PostMapping("/update-lineup")
+    public ResponseEntity<?> updateLineup(
+            @RequestBody LineupRequest request,
+            @AuthenticationPrincipal User user) {
+
+        teamService.updateLineup(user, request);
+
+        return ResponseEntity.ok(java.util.Map.of(
+                "message", "Lineup updated successfully!"
+        ));
     }
 }

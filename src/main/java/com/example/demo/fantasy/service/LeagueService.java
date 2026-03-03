@@ -64,7 +64,7 @@ public class LeagueService {
                 .map(team -> TeamStandingDTO.builder()
                         .teamId(team.getId())
                         .teamName(team.getTeamName())
-                        .managerName(team.getUser().getUsername()) // Assumes User has username
+                        .managerName(team.getTeamName()) // Assumes User has username
                         .totalPoints(team.getTotalPoints())
                         .gwPoints(25) // Mock GW points for now
                         .build())
