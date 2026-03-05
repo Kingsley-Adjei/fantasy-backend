@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/leagues")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class LeagueController {
     private final LeagueService leagueService;
@@ -38,9 +40,20 @@ public class LeagueController {
 
     @GetMapping("/my-leagues")
     public ResponseEntity<List<League>> getMyLeagues(@AuthenticationPrincipal User user) {
-        Team userTeam = teamRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new RuntimeException("TEAM_NOT_FOUND"));
-        return ResponseEntity.ok(leagueRepository.findAllByMembersId(userTeam.getId()));
+        // TEMPORARY DEBUG
+        System.out.println("USER FROM TOKEN: " + user);
+
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        Optional<Team> userTeam = teamRepository.findByUserId(user.getId());
+
+        if (userTeam.isEmpty()) {
+            return ResponseEntity.ok(List.of());
+        }
+
+        return ResponseEntity.ok(leagueRepository.findAllByMembersId(userTeam.get().getId()));
     }
 
     @GetMapping("/{id}/standings")

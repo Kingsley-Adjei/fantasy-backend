@@ -22,4 +22,8 @@ public class Player {
     private Integer totalPoints = 0;
     @Column(nullable = false)
     private Integer pointsThisGw = 0;
+    @Column
+    private String clubColor;
+    @Column
+    private String nextFixture;
 }

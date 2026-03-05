@@ -124,4 +124,9 @@ public class TeamService {
 
         teamRepository.save(team);
     }
+    // --- 4. GET TEAM BY USER ---
+    public java.util.Optional<Team> getTeamByUser(User user) {
+        // This connects the User from the Security Token to their Team in the DB
+        return teamRepository.findByUserId(user.getId());
+    }
 }

@@ -15,30 +15,39 @@ public class DataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (playerRepository.count() == 0) {
-            playerRepository.save(Player.builder().name("Haaland").position("FWD").realClub("Man City").price(15.0).build());
-            playerRepository.save(Player.builder().name("Saka").position("MID").realClub("Arsenal").price(12.0).build());
-            playerRepository.save(Player.builder().name("Palmer").position("MID").realClub("Chelsea").price(11.5).build());
-            playerRepository.save(Player.builder().name("Salah").position("MID").realClub("Liverpool").price(13.5).build());
-            playerRepository.save(Player.builder().name("Pickford").position("GK").realClub("Everton").price(5.0).build());
-            playerRepository.save(Player.builder().name("Kingsley").position("MID").realClub("Man City").price(12.0).build());
-            playerRepository.save(Player.builder().name("Sadik").position("DF").realClub("Man City").price(6.3).build());
-            playerRepository.save(Player.builder().name("Dennis").position("MID").realClub("Man City").price(5.7).build());
-            playerRepository.save(Player.builder().name("Blaise").position("MID").realClub("Man City").price(6.0).build());
-            playerRepository.save(Player.builder().name("Justice").position("DF").realClub("Man City").price(5.5).build());
-            playerRepository.save(Player.builder().name("Don-Kay").position("MID").realClub("Man City").price(6.5).build());
-            playerRepository.save(Player.builder().name("Charles").position("FWD").realClub("Man City").price(7.0).build());
-            playerRepository.save(Player.builder().name("Osei").position("FWD").realClub("Man City").price(10.0).build());
-            playerRepository.save(Player.builder().name("Brain").position("DF").realClub("Man City").price(6.0).build());
-            playerRepository.save(Player.builder().name("Nigel").position("GK").realClub("Man City").price(6.0).build());
-            playerRepository.save(Player.builder().name("UglyBoy").position("GK").realClub("Man City").price(5.3).build());
-            playerRepository.save(Player.builder().name("Santos").position("FWD").realClub("Man City").price(6.8).build());
-            playerRepository.save(Player.builder().name("Arnold").position("DF").realClub("Man City").price(5.2).build());
-            playerRepository.save(Player.builder().name("Banasco").position("FWD").realClub("Man City").price(6.0).build());
-            playerRepository.save(Player.builder().name("Frequency").position("DF").realClub("Man City").price(5.0).build());
-            playerRepository.save(Player.builder().name("Prince").position("DF").realClub("Man City").price(6.5).build());
-            playerRepository.save(Player.builder().name("Paul").position("MID").realClub("Man City").price(5.8).build());
 
-            System.out.println("✅ Player Market Populated!");
+            // --- GOALKEEPERS (GK) ---
+            playerRepository.save(Player.builder().name("Pickford").position("GK").price(5.0).realClub("CS1").clubColor("#003399").nextFixture("IT1 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Nigel").position("GK").price(4.5).realClub("IT1").clubColor("#FFCC00").nextFixture("CS1 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("UglyBoy").position("GK").price(4.0).realClub("CS3").clubColor("#660000").nextFixture("IT2 (H)").pointsThisGw(0).totalPoints(0).build());
+
+            // --- DEFENDERS (DEF) ---
+            playerRepository.save(Player.builder().name("Saliba").position("DEF").price(6.0).realClub("CS1").clubColor("#003399").nextFixture("IT1 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Sadik").position("DEF").price(5.5).realClub("CS2").clubColor("#006633").nextFixture("CS4 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Justice").position("DEF").price(5.0).realClub("IT2").clubColor("#000000").nextFixture("CS3 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Brain").position("DEF").price(4.5).realClub("CS4").clubColor("#FF6600").nextFixture("CS2 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Arnold").position("DEF").price(5.5).realClub("CS1").clubColor("#003399").nextFixture("IT1 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Frequency").position("DEF").price(4.0).realClub("IT1").clubColor("#FFCC00").nextFixture("CS1 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Prince").position("DEF").price(4.0).realClub("CS2").clubColor("#006633").nextFixture("CS4 (H)").pointsThisGw(0).totalPoints(0).build());
+
+            // --- MIDFIELDERS (MID) ---
+            playerRepository.save(Player.builder().name("Saka").position("MID").price(10.0).realClub("CS1").clubColor("#003399").nextFixture("IT1 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Palmer").position("MID").price(9.5).realClub("IT1").clubColor("#FFCC00").nextFixture("CS1 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Salah").position("MID").price(12.5).realClub("CS3").clubColor("#660000").nextFixture("IT2 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Kingsley").position("MID").price(8.0).realClub("IT2").clubColor("#000000").nextFixture("CS3 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Dennis").position("MID").price(6.5).realClub("CS4").clubColor("#FF6600").nextFixture("CS2 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Blaise").position("MID").price(7.0).realClub("CS2").clubColor("#006633").nextFixture("CS4 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Don-Kay").position("MID").price(7.5).realClub("IT1").clubColor("#FFCC00").nextFixture("CS1 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Paul").position("MID").price(5.0).realClub("CS3").clubColor("#660000").nextFixture("IT2 (H)").pointsThisGw(0).totalPoints(0).build());
+
+            // --- FORWARDS (FWD) ---
+            playerRepository.save(Player.builder().name("Haaland").position("FWD").price(14.0).realClub("CS1").clubColor("#003399").nextFixture("IT1 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Charles").position("FWD").price(7.5).realClub("IT2").clubColor("#000000").nextFixture("CS3 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Osei").position("FWD").price(8.5).realClub("CS4").clubColor("#FF6600").nextFixture("CS2 (A)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Santos").position("FWD").price(7.0).realClub("CS2").clubColor("#006633").nextFixture("CS4 (H)").pointsThisGw(0).totalPoints(0).build());
+            playerRepository.save(Player.builder().name("Banasco").position("FWD").price(6.5).realClub("IT1").clubColor("#FFCC00").nextFixture("CS1 (H)").pointsThisGw(0).totalPoints(0).build());
+
+            System.out.println("✅ Player Market Populated with UI Styles!");
         }
     }
 }

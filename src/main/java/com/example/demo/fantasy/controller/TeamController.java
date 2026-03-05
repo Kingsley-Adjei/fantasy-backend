@@ -15,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/teams")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor // This fixes the 'Cannot resolve teamService' error
 public class TeamController {
 
