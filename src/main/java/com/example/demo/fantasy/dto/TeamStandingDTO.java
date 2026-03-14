@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Getter @Setter @Builder
 public class TeamStandingDTO {
+    private UUID id;
     private UUID teamId;
     private String teamName;
     private String managerName;

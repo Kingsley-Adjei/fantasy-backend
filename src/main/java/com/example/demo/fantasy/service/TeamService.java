@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,21 +19,30 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final PlayerRepository playerRepository;
     private final GameweekRepository gameweekRepository; // Added this!
-    private final SquadPlayerRepository squadPlayerRepository; // Added this!
+    private final SquadPlayerRepository squadPlayerRepository;
+    private final LeagueService leagueService;
 
     // --- 1. SQUAD CREATION ---
     @Transactional
     public Team createInitialSquad(User user, String teamName, List<Long> playerIds) {
-        if (teamRepository.existsByTeamName(teamName)) {
+        // Guard 1: User already has a team
+        if (teamRepository.findByUserId(user.getId()).isPresent()) {
+            throw new RuntimeException("USER_ALREADY_HAS_TEAM");
+        }
+
+        // Guard 2: Team name taken (case-insensitive)
+        String normalizedName = teamName.trim().toUpperCase();
+        if (teamRepository.existsByTeamNameIgnoreCase(normalizedName)) {
             throw new RuntimeException("Team name already exists!");
         }
 
+        // Guard 3: Exactly 15 players
         List<Player> selectedPlayers = playerRepository.findAllById(playerIds);
-
         if (selectedPlayers.size() != 15) {
             throw new RuntimeException("A squad must have exactly 15 players.");
         }
 
+        // Guard 4: Budget
         double totalCost = selectedPlayers.stream().mapToDouble(Player::getPrice).sum();
         if (totalCost > 100.0) {
             throw new RuntimeException("Squad exceeds budget of 100 Cedis!");
@@ -40,17 +50,15 @@ public class TeamService {
 
         Team newTeam = Team.builder()
                 .user(user)
-                .teamName(teamName)
+                .teamName(normalizedName)
                 .remainingBudget(100.0 - totalCost)
                 .totalPoints(0)
                 .build();
 
-        // Save team first so it has an ID
         Team savedTeam = teamRepository.save(newTeam);
 
-        // Convert Players to SquadPlayers (Bridge Table)
         for (int i = 0; i < selectedPlayers.size(); i++) {
-            boolean starter = i < 11; // First 11 are starters by default
+            boolean starter = i < 11;
             SquadPlayer sp = SquadPlayer.builder()
                     .team(savedTeam)
                     .player(selectedPlayers.get(i))
@@ -60,6 +68,7 @@ public class TeamService {
             squadPlayerRepository.save(sp);
         }
 
+        leagueService.autoJoinGlobalLeague(savedTeam);
         return savedTeam;
     }
 
@@ -129,4 +138,8 @@ public class TeamService {
         // This connects the User from the Security Token to their Team in the DB
         return teamRepository.findByUserId(user.getId());
     }
+    public boolean hasTeam(User user) {
+        return teamRepository.findByUserId(user.getId()).isPresent();
+    }
+
 }

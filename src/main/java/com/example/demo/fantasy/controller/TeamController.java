@@ -5,8 +5,10 @@ import com.example.demo.fantasy.dto.TeamRequest;
 import com.example.demo.fantasy.dto.TransferRequest;
 import com.example.demo.fantasy.entity.Team;
 import com.example.demo.fantasy.entity.User;
+import com.example.demo.fantasy.repository.TeamRepository;
 import com.example.demo.fantasy.service.TeamService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,20 +21,25 @@ import java.util.Map;
 @RequiredArgsConstructor // This fixes the 'Cannot resolve teamService' error
 public class TeamController {
 
-    private final TeamService teamService; // Must be 'private final' for Lombok to work
-
+    private final TeamService teamService;
     @PostMapping("/create")
     public ResponseEntity<?> createTeam(
             @RequestBody TeamRequest request,
             @AuthenticationPrincipal User user) {
-
-        // This calls the logic that checks the 15 players and 100 Cedis budget
-        Team newTeam = teamService.createInitialSquad(user, request.getTeamName(), request.getPlayerIds());
-
-        return ResponseEntity.ok(Map.of(
-                "message", "TEAM_CREATED_SUCCESSFULLY",
-                "teamId", newTeam.getId()
-        ));
+        try {
+            Team newTeam = teamService.createInitialSquad(user, request.getTeamName(), request.getPlayerIds());
+            return ResponseEntity.ok(Map.of(
+                    "message", "TEAM_CREATED_SUCCESSFULLY",
+                    "teamId", newTeam.getId()
+            ));
+        } catch (RuntimeException e) {
+            if ("USER_ALREADY_HAS_TEAM".equals(e.getMessage())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(Map.of("error", "USER_ALREADY_HAS_TEAM"));
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
     @GetMapping("/my-team")
     public ResponseEntity<?> getMyTeam(@AuthenticationPrincipal User user) {
@@ -63,5 +70,9 @@ public class TeamController {
         return ResponseEntity.ok(java.util.Map.of(
                 "message", "Lineup updated successfully!"
         ));
+    }
+    @GetMapping("/has-team")
+    public ResponseEntity<Map<String, Boolean>> hasTeam(@AuthenticationPrincipal User user) {
+        return ResponseEntity.ok(Map.of("hasTeam", teamService.hasTeam(user)));
     }
 }

@@ -12,9 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api/leagues")
@@ -28,7 +31,11 @@ public class LeagueController {
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody Map<String, String> request, @AuthenticationPrincipal User user) {
         League newLeague = leagueService.createLeague(user, request.get("name"));
-        return ResponseEntity.ok(newLeague);
+        return ResponseEntity.ok(Map.of(
+                "id", newLeague.getId(),
+                "name", newLeague.getName(),
+                "joinCode", newLeague.getJoinCode()
+        ));
     }
 
 
@@ -39,7 +46,7 @@ public class LeagueController {
     }
 
     @GetMapping("/my-leagues")
-    public ResponseEntity<List<League>> getMyLeagues(@AuthenticationPrincipal User user) {
+    public ResponseEntity<?> getMyLeagues(@AuthenticationPrincipal User user) {
         // TEMPORARY DEBUG
         System.out.println("USER FROM TOKEN: " + user);
 
@@ -53,11 +60,23 @@ public class LeagueController {
             return ResponseEntity.ok(List.of());
         }
 
-        return ResponseEntity.ok(leagueRepository.findAllByMembersId(userTeam.get().getId()));
+        List<League> userLeagues = leagueRepository.findAllByMembersId(userTeam.get().getId());
+        List<Map<String, Object>> response = userLeagues.stream()
+                .map(l -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", l.getId());
+                    map.put("name", l.getName());
+                    map.put("joinCode", l.getJoinCode());
+                    return map;
+                })
+                .toList();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/standings")
-    public ResponseEntity<LeagueResponseDTO> getStandings(@PathVariable Long id) {
-        return ResponseEntity.ok(leagueService.getLeagueStandings(id));
+    public ResponseEntity<LeagueResponseDTO> getStandings(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User user) {  // ADD user param
+        return ResponseEntity.ok(leagueService.getLeagueStandings(id, user));
     }
 }
